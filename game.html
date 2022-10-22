@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>game</title>
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta http-equiv="X-UA-Comatible" content="ie=edge">
+    <style>
+    #main{
+        width:640px;
+        height:480px;
+        margin:auto;
+        border: 1px solid black;
+    }
+    </style>
+
+    <script>
+        var canvas
+        var ctx
+        var beck_pos_x = 0
+        var beck_pos_y = 340
+        var pos_x = 100, pos_y = 300
+        var oponent_x = 640, oponent_y = 320
+        var welcome_screen = true
+        var factor =  1
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function draw_background(){
+            ctx.save()
+            ctx.fillStyle = 'rgba(255, 255, 0, 1)';
+            ctx.translate(beck_pos_x, beck_pos_y)
+            ctx.fillRect(0, 0, 640, 480)
+            ctx.restore()
+        }
+
+        function draw_hero() {
+            ctx.save()
+            ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+            ctx.translate(pos_x, pos_y)
+            ctx.fillRect(0, 0, 20, 40)
+            ctx.restore()
+        }
+
+        function draw_oponent() {
+            ctx.save() // zachowanie stanu kontekstu
+            ctx.fillStyle = 'rgba(0, 255, 0, 1)'; // ustawienie koloru wype�nienia
+            ctx.translate(oponent_x, oponent_y) // przesuni�cie tkaniny tak, aby narysowny
+            // bohater znalaz� si� w odpowiednim miejscu
+            ctx.fillRect(0, 0, 20, 20) // narysowanie bohatera
+            ctx.restore() // przywr�cenie stanu kontekstu
+        }
+
+        function redraw(){
+            ctx.clearRect(0, 0, 640, 480)
+            draw_hero()
+            draw_background()
+        }
+
+        function goDown(){
+            ctx.clearRect(0, 0, 640, 480)
+
+            if(pos_y < 300){
+                pos_y += 1
+            }
+            draw_hero()
+            draw_background()
+            draw_oponent()
+        }
+
+        function goRight(){
+            ctx.clearRect(0, 0, 640, 480)
+
+            if(oponent_x > -20){
+                oponent_x -= factor
+            }else {
+                oponent_x = 640
+                factor += 1
+            }
+
+            draw_oponent()
+            draw_hero()
+            draw_background()
+        }
+
+        function draw_boom() {
+            ctx.save() // zachowanie stanu kontekstu
+            ctx.fillStyle = 'rgba(255, 12, 255, 1)'; // ustawienie koloru wype�nienia
+            ctx.translate(pos_x_op, pos_y_op) // przesuni�cie tkaniny tak, aby narysowny
+            // bohater znalaz� si� w odpowiednim miejscu
+            ctx.fillRect(0, 0, 100, 100) // narysowanie bohatera
+            ctx.restore() // przywr�cenie stanu kontekstu
+        }
+
+        function collision(){
+            if(pos_x - 10 > oponent_x && pos_x + 10 < oponent_x){
+                draw_boom()
+                welcome_screen = true
+                init()
+            }
+        }
+
+        function init(){
+            window.addEventListener("keydown", keyListener, false)
+            canvas=document.getElementById('game')
+            ctx=canvas.getContext('2d')
+            ctx.font='48px sans-serif'
+            ctx.textAlign='center'
+            ctx.fillText('READY PLAYER ONE?', 320, 240)
+            draw_hero()
+            draw_background()
+        }
+
+        function keyListener(e){
+            if(welcome_screen){
+                ctx.clearRect(0, 0, 640, 480)
+                welcome_screen=false
+                window.setInterval(redraw, 10)
+                draw_boom()
+            }else {
+                if (e.keyCode === 32 && pos_y === 300) {
+                    pos_y -= 150
+                }
+                if (pos_y === 150) {
+                    window.setInterval(goDown, 10)
+                }
+
+                window.setInterval(goRight, 5)
+
+                window.setInterval(collision, 100)
+            }
+        }
+
+    </script>
+
+</head>
+<body onload="init()">
+    <div id = "main">
+        <canvas id="game" width="640" height="480">
+            START
+        </canvas>
+    </div>
+</body>
+</html>
